@@ -3,7 +3,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.BufferedWriter;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 
@@ -11,6 +13,9 @@ public class Main {
     private static final Random random = new Random();
 
     public static void main(String[] args) {
+
+        generateAndSaveInputData("input_data.txt");
+
         int[][] datasets = generateDatasets(50, 100, 200);
         writeResultsToExcel(datasets, "results.xlsx");
 
@@ -27,6 +32,33 @@ public class Main {
         try {
             ratingSystem.saveToFile("product_ratings.txt");
             System.out.println("Рейтинги товаров успешно сохранены в product_ratings.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void generateAndSaveInputData(String filename) {
+        Random random = new Random();
+        int startSize = 100;
+        int endSize = 10000;
+        int step = 200;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            for (int size = startSize; size <= endSize; size += step) {
+                int[] data = new int[size];
+                for (int i = 0; i < size; i++) {
+                    data[i] = random.nextInt(1000); // числа от 0 до 999
+                }
+
+                // Записываем строку: сначала размер, потом элементы через пробел
+                writer.write(size + " ");
+                for (int num : data) {
+                    writer.write(num + " ");
+                }
+                writer.newLine();
+            }
+
+            System.out.println("Входные данные успешно записаны в файл " + filename);
         } catch (IOException e) {
             e.printStackTrace();
         }
